@@ -1,0 +1,56 @@
+#+title: Sample Org File
+#+author: Seylerius
+
+This is an attempt to test Org-Mode processing.
+
+* The First Section
+
+This is the content of the first section. There's also a list. 
+
++ First UL
++ Second UL
++ Third UL
+
+** The First SubSection
+
+This subsection contains a nested list.
+
+1. The first OL
+   + UL 1.1
+   + UL 1.2
+2. The second OL
+   + UL 2.1
+   + UL 2.2
+3. The third OL
+   + UL 3.1
+   + UL 3.2
+
+** The Second SubSection
+
+1. OL 1 of List 1
+2. OL 2 of List 1
+
+There are two lists in this subsection
+
+1. OL 1 of List 2
+2. OL 2 of List 2
+
+** The Third SubSection
+
+This subsection has a table.
+
+| Name | Value |
+|------+-------|
+| One  | Foo   |
+| Two  | Bar   |
+
+** The Fourth SubSection
+
+This subsection has a definition list.
+
++ Foo :: Foo
++ Bar :: Bar
+
+* The Final Section
+
+Thus ends the sample.

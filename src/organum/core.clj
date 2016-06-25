@@ -1,6 +1,7 @@
 (ns organum.core
   (:require [clojure.java.io :as io]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [hiccup.core :as h]))
 
 ;; node constructors
 
@@ -120,3 +121,32 @@
   [f]
   (with-open [rdr (io/reader f)]
     (reduce handle-line [(root)] (line-seq rdr))))
+
+;; Rendering
+
+;; HTML
+(declare dispatch-node)
+
+(defn render-section
+  "Render a section node to HTML"
+  [node]
+  (let [open-tag (str "<h" (node :level) ">")
+        close-tag (str "</h" (node :level) ">")]
+    () (str open-tag (node :name) close-tag)
+    (if (contains? node :content)
+      (map dispatch-node (node :content)))))
+
+(defn render-paragraph
+  "Render a paragraph node to HTML"
+  [node]
+  (let [open-tag "<p>"
+        close-tag "</p>"]
+    (str open-tag (node :text) close-tag)))
+
+(defn dispatch-node
+  "Render the HTML form of the given node."
+  [node]
+  (let [render {:section render-section
+                :paragraph render-paragraph}]
+    ((render (node :type)) node)))
+
