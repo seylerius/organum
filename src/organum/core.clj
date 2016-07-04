@@ -2,9 +2,16 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
             [hiccup.core :as h]
-            [instaparse.core :as insta]))
+            [instaparse.core :as insta]
+            [cuerdas.core :as s]))
 
-;; inline parser
+;; Parsers
+
+(def headlines
+  (insta/parser
+   "<root> = (h | string)+
+    h = #'^\\*+' <#'\\s+'> #'.+$'
+    <string> = #'.*'"))
 
 (def inline-markup
   (insta/parser
@@ -15,26 +22,18 @@
     strike = <'+'> inline <'+'>
     verbatim = <'='> '[^=]+' <'='>
     code = <'~'> #'[^~]+' <'~'>
-    super = <'^'> (#'\w' | <'{'> inline <'}'>)
-    sub = <'_'> (#'\w' | <'{'> inline <'}'>)
-    string = #'.+'"))
-
-(defn inline
-  [text]
-  (let [
-        code-re #"~(\w[^~]*)~"
-        super-re #"(\w)^(\S)|(\w)^{([^}]+)}"
-        sub-re #"(\w)_(\S)|(\w)_{([^}]+)}"]
-    ))
+    super = <'^'> (#'\\w' | <'{'> inline <'}'>)
+    sub = <'_'> (#'\\w' | <'{'> inline <'}'>)
+    <string> = '\\\\*' | '\\\\/' | '\\\\_' | '\\\\+' | '\\\\='  '\\\\~' | '\\\\^' | #'[^*/_+=~^_\\\\]*'"))
 
 ;; node constructors
 
 (defn node [type] {:type type :content []})
 (defn root [] (node :root))
-(defn section [level name tags kw] (merge (node :section) {:level level :name name :tags tags :kw kw}))
+(defn section [level name tags kw] (merge (node :section) {:level level :name (inline-markup name) :tags tags :kw kw}))
 (defn block [type qualifier] (merge (node :block) {:block-type type :qualifier qualifier}))
 (defn drawer [] (node :drawer))
-(defn line [type text] {:line-type type :text text})
+(defn line [type text] {:line-type type :text (inline-markup text)})
 
 (defn classify-line
   "Classify a line for dispatch to handle-line multimethod."
@@ -163,7 +162,7 @@
 (defn render-paragraph
   "Render a paragraph node to HTML"
   [node]
-  [:p (node :text)])
+  [:p (concat (node :text))])
 
 (defn dispatch-node
   "Render the HTML form of the given node."
