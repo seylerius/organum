@@ -5,7 +5,7 @@ This is an attempt to test Org-Mode processing.
 
 * The First Section
 
-This is the content of the first section. There's also a list. 
+This *is* /the/ _content_ +oof+ of the first section. There's also a list. 
 
 + First UL
 + Second UL
