@@ -1,7 +1,31 @@
 (ns organum.core
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
-            [hiccup.core :as h]))
+            [hiccup.core :as h]
+            [instaparse.core :as insta]))
+
+;; inline parser
+
+(def inline-markup
+  (insta/parser
+   "<inline> = (b | i | u | strike | verbatim | code | super | sub | string)+
+    b = <'*'> inline <'*'>
+    i = <'/'> inline <'/'>
+    u = <'_'> inline <'_'>
+    strike = <'+'> inline <'+'>
+    verbatim = <'='> '[^=]+' <'='>
+    code = <'~'> #'[^~]+' <'~'>
+    super = <'^'> (#'\w' | <'{'> inline <'}'>)
+    sub = <'_'> (#'\w' | <'{'> inline <'}'>)
+    string = #'.+'"))
+
+(defn inline
+  [text]
+  (let [
+        code-re #"~(\w[^~]*)~"
+        super-re #"(\w)^(\S)|(\w)^{([^}]+)}"
+        sub-re #"(\w)_(\S)|(\w)_{([^}]+)}"]
+    ))
 
 ;; node constructors
 
@@ -139,9 +163,7 @@
 (defn render-paragraph
   "Render a paragraph node to HTML"
   [node]
-  (let [open-tag "<p>"
-        close-tag "</p>"]
-    (str open-tag (node :text) close-tag)))
+  [:p (node :text)])
 
 (defn dispatch-node
   "Render the HTML form of the given node."
