@@ -1,33 +1,19 @@
-* Organum
+#+title: twijjerbot
+#+author: Elliott "Seylerius" Seyler
 
-Simple [[http://orgmode.org][org-mode]] parser in clojure.
+A Clojure Twitter bot with a web management interface. 
 
-Some regexps and logic flagrantly stolen from [[https://github.com/bdewey/org-ruby][org-ruby]] and [[https://github.com/bjonnh/PyOrgMode][PyOrgMode]].
+* Features
 
-** Usage
+** Tweet generation
 
-[[http://leiningen.org][Leiningen]] dependency information:
+** Relationship management
 
-#+BEGIN_SRC clojure
-[org.clojars.gmorpheme/organum "0.1.1"]
-#+END_SRC
+** Web Interface
 
-[[http://maven.apache.org/][Maven]] dependency information:
+* License
 
-#+BEGIN_SRC xml
-<dependency>
-  <groupId>org.clojars.gmorpheme</groupId>
-  <artifactId>organum</artifactId>
-  <version>0.1.1</version>
-</dependency>
-#+END_SRC
+Copyright © 2016 Elliott Seyler
 
-#+BEGIN_SRC clojure
-(use 'organum.core)
-(parse-file "test.org")
-;...
-#+END_SRC
-
-Copyright Greg Hawkins 2012. 
-
-Distributed under the Eclipse Public License, the same as Clojure.
+Distributed under the Eclipse Public License either version 1.0 or (at
+your option) any later version.

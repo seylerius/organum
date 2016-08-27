@@ -7,11 +7,27 @@
 
 ;; Parsers
 
+(def doc-metadata
+  (insta/parser
+   "<doc> = token (ows token)*
+    <token> = metadata / content
+    <metadata> = title | author | date
+    title = <'#+title: '> #'.*'
+    author = <'#+author: '> #'.*'
+    <ows> = <#'[\\s\r\n]*'>
+    date = <'#+date: '> #'.*'
+    <content> = #'(?s).*'"))
+
 (def headlines
   (insta/parser
-   "<root> = (h | string)+
-    h = #'^\\*+' <#'\\s+'> #'.+$'
-    <string> = #'.*'"))
+   "section = h ows content
+    h = #'^\\*+' #'TODO|DONE'? <#'\\s+'> #'(?m).+?' <#'\\s+'> #':([a-zA-Z0-9_@]+:)+'?
+    <ows> = <#'[\\s\r\n]*'>
+    <content> = #'^([^*].*)?'"))
+
+(defn headline-leveler
+  [[h stars title]]
+  [(keyword (str "h" (count stars))) title])
 
 (def inline-markup
   (insta/parser
