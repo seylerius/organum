@@ -20,10 +20,16 @@
 
 (def headlines
   (insta/parser
-   "section = h ows content
-    h = #'^\\*+' #'TODO|DONE'? <#'\\s+'> #'(?m).+?' <#'\\s+'> #':([a-zA-Z0-9_@]+:)+'?
+   "<S> = token (ows token)*
+    <token> = section / content
+    section = h ows content
+    h = stars <#'\\s+'> (todo <#'\\s+'>)? #'.+' <#'\\s+:'> tags
+    stars = #'^\\*+'
+    todo = #'TODO|DONE'
+    tags = tag <':'> (tag <':'>)*
+    tag = #'[a-zA-Z0-9_@]+'
     <ows> = <#'[\\s\r\n]*'>
-    <content> = #'^([^*].*)?'"))
+    <content> = #'(?s)^([^*].*)?'"))
 
 (defn headline-leveler
   [[h stars title]]
@@ -41,6 +47,15 @@
     super = <'^'> (#'\\w' | <'{'> inline <'}'>)
     sub = <'_'> (#'\\w' | <'{'> inline <'}'>)
     <string> = '\\\\*' | '\\\\/' | '\\\\_' | '\\\\+' | '\\\\='  '\\\\~' | '\\\\^' | #'[^*/_+=~^_\\\\]*'"))
+
+;; Filters
+
+(defn reparse-string
+  "If `i` is a string, pass it to `parser`; otherwise, return `i` unmodified."
+  [parser i]
+  (if (string? i)
+    (parser i)
+    i))
 
 ;; node constructors
 
