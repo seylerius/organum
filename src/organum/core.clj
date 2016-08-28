@@ -22,8 +22,8 @@
   (insta/parser
    "<S> = token (ows token)*
     <token> = section / content
-    section = h ows content*
-    h = stars <#'\\s+'> (todo <#'\\s+'>)? title
+    section = h (ows content)*
+    h = ows stars <#'\\s+'> (todo <#'\\s+'>)? title
     <title> = tagged / untagged
     <tagged> = #'.+?(?=\\s+:)' <#'\\s+:'> tags
     <untagged> = #'.+'
