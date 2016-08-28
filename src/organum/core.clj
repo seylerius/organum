@@ -22,14 +22,14 @@
   (insta/parser
    "<S> = token (ows token)*
     <token> = section / content
-    section = h ows content
-    h = stars <#'\\s+'> (todo <#'\\s+'>)? #'.+' <#'\\s+:'> tags
+    section = h ows content*
+    h = stars <#'\\s+'> (todo <#'\\s+'>)? #'.+(?:\\s:)?' tags?
     stars = #'^\\*+'
     todo = #'TODO|DONE'
     tags = tag <':'> (tag <':'>)*
     tag = #'[a-zA-Z0-9_@]+'
     <ows> = <#'[\\s\r\n]*'>
-    <content> = #'(?s)^([^*].*)?'"))
+    <content> = #'^([^*].*)?'"))
 
 (defn headline-leveler
   [[h stars title]]
