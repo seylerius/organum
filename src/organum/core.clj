@@ -25,12 +25,12 @@
     section = h ows content*
     h = stars <#'\\s+'> (todo <#'\\s+'>)? title
     <title> = tagged / untagged
-    <tagged> = #'.+?' <#'\\s+:'> tags
+    <tagged> = #'.+?(?=\\s+:)' <#'\\s+:'> tags
     <untagged> = #'.+'
     stars = #'^\\*+'
     todo = #'TODO|DONE'
-    tags = tag <':'> (tag <':'>)*
-    tag = #'[a-zA-Z0-9_@]+'
+    tags = (tag <':'>)+
+    <tag> = #'[a-zA-Z0-9_@]+'
     <ows> = <#'[\\s\r\n]*'>
     <content> = #'^([^*].*)?'"))
 
