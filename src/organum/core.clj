@@ -23,7 +23,7 @@
    "<S> = token (ows token)*
     <token> = section / content
     section = h ows content*
-    h = stars <#'\\s+'> (todo <#'\\s+'>)? #'.+(?:\\s:)?' tags?
+    h = stars <#'\\s+'> (todo <#'\\s+'>)? #'.+(?!\\s:)?' tags?
     stars = #'^\\*+'
     todo = #'TODO|DONE'
     tags = tag <':'> (tag <':'>)*
