@@ -29,8 +29,9 @@
     <untagged> = #'.+'
     stars = #'^\\*+'
     todo = #'TODO|DONE'
-    tags = (tag <':'>)+
+    tags = (tag <':'>)+ ws
     <tag> = #'[a-zA-Z0-9_@]+'
+    <ws> = <#'[\r\n\\s]+'>
     <ows> = <#'[\\s\r\n]*'>
     <content> = #'^([^*].*)?'"))
 
