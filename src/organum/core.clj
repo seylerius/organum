@@ -23,10 +23,15 @@
    "<S> = token (ows token)*
     <token> = section / content
     section = h (ows content)*
-    h = ows stars <#'\\s+'> (todo <#'\\s+'>)? title
+    h = ows stars <#'\\s+'> headline
+    <headline> = keyed / unkeyed
+    <keyed> = keyword ws-line unkeyed
+    <unkeyed> = prioritized / title
+    <prioritized> = priority ws-line title
     <title> = (#'.'+ ws-line? tags) / #'.+'
     stars = #'^\\*+'
-    todo = #'TODO|DONE'
+    keyword = #'TODO|DONE'
+    priority = <'#['> #'[a-zA-Z]' <']'>
     tags = <':'> (tag <':'>)+ ws
     <tag> = #'[a-zA-Z0-9_@]+'
     <ws> = <#'[\r\n\\s]+'>
@@ -205,3 +210,11 @@
                 :paragraph render-paragraph}]
     ((render (node :type)) node)))
 
+;; Overall Parser
+
+(defn parse
+  "Take org-mode data and parse it to hiccup notation"
+  [data]
+  (->> data
+       doc-metadata
+       (map (partial reparse-string headlines))))
