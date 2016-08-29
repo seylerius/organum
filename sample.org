@@ -3,7 +3,7 @@
 
 This is an attempt to test Org-Mode processing.
 
-* TODO [#A] The First : Section                                     :foo:bar:
+* TODO [#A] The *First* : Section                                   :foo:bar:
 
 This *is* /the/ _content_ +oof+ of the first section. There's also a list. 
 

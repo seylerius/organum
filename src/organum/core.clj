@@ -1,6 +1,7 @@
 (ns organum.core
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
+            [clojure.walk :as w]
             [hiccup.core :as h]
             [instaparse.core :as insta]
             [cuerdas.core :as s]))
@@ -31,17 +32,13 @@
     <title> = (#'.'+ ws-line? tags) / #'.+'
     stars = #'^\\*+'
     keyword = #'TODO|DONE'
-    priority = <'#['> #'[a-zA-Z]' <']'>
+    priority = <'[#'> #'[a-zA-Z]' <']'>
     tags = <':'> (tag <':'>)+ ws
     <tag> = #'[a-zA-Z0-9_@]+'
     <ws> = <#'[\r\n\\s]+'>
     <ws-line> = <#'[^\r\n\\S]+'>
     <ows> = <#'\\s*'>
     <content> = #'^([^*].*)?'"))
-
-(defn headline-leveler
-  [[h stars title]]
-  [(keyword (str "h" (count stars))) title])
 
 (def inline-markup
   (insta/parser
@@ -55,6 +52,38 @@
     super = <'^'> (#'\\w' | <'{'> inline <'}'>)
     sub = <'_'> (#'\\w' | <'{'> inline <'}'>)
     <string> = '\\\\*' | '\\\\/' | '\\\\_' | '\\\\+' | '\\\\='  '\\\\~' | '\\\\^' | #'[^*/_+=~^_\\\\]*'"))
+
+;; Fixers
+
+(defn tree-fixer
+  [tree item]
+  (cond (vector? item)
+        (conj tree (vec (reduce reducing [] item)))
+        
+        (and (coll? item) (not (vector? item)))
+        (apply concat tree (map (partial reducing []) item))
+        
+        :default (conj tree item)))
+
+(defn fix-tree
+  [tree]
+  (reduce tree-fixer '() tree))
+
+(defn clean-headline
+  [stars & args]
+  (let [level (keyword (str "h" (count (second stars))))
+        first-lists (->> args
+                        (take-while (complement string?)) 
+                        (drop-while string?))
+        title (->> args 
+                   (drop-while (complement string?)) 
+                   (take-while string?)
+                   (apply str)
+                   inline-markup)
+        last-lists (->> args 
+                        (drop-while (complement string?)) 
+                        (drop-while string?))]
+    (concat [level] first-lists title last-lists)))
 
 ;; Filters
 
@@ -217,4 +246,7 @@
   [data]
   (->> data
        doc-metadata
-       (map (partial reparse-string headlines))))
+       (map (partial reparse-string headlines))
+       fix-tree
+       ;; (insta/transform {:h clean-headline})
+       ))
