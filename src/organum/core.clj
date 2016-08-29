@@ -58,10 +58,10 @@
 (defn tree-fixer
   [tree item]
   (cond (vector? item)
-        (conj tree (vec (reduce reducing [] item)))
+        (conj tree (vec (reduce tree-fixer [] item)))
         
         (and (coll? item) (not (vector? item)))
-        (apply concat tree (map (partial reducing []) item))
+        (apply concat tree (map (partial tree-fixer []) item))
         
         :default (conj tree item)))
 
