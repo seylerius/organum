@@ -24,15 +24,14 @@
     <token> = section / content
     section = h (ows content)*
     h = ows stars <#'\\s+'> (todo <#'\\s+'>)? title
-    <title> = tagged / untagged
-    <tagged> = #'.+?(?=\\s+:)' <#'\\s+:'> tags
-    <untagged> = #'.+'
+    <title> = (#'.'+ ws-line? tags) / #'.+'
     stars = #'^\\*+'
     todo = #'TODO|DONE'
-    tags = (tag <':'>)+ ws
+    tags = <':'> (tag <':'>)+ ws
     <tag> = #'[a-zA-Z0-9_@]+'
     <ws> = <#'[\r\n\\s]+'>
-    <ows> = <#'[\\s\r\n]*'>
+    <ws-line> = <#'[^\r\n\\S]+'>
+    <ows> = <#'\\s*'>
     <content> = #'^([^*].*)?'"))
 
 (defn headline-leveler
