@@ -10,7 +10,7 @@
 
 (def doc-metadata
   (insta/parser
-   "<doc> = token (ows token)*
+   "document = token (ows token)*
     <token> = metadata / content
     <metadata> = title | author | date
     title = <'#+title: '> #'.*'
