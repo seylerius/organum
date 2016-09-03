@@ -5,5 +5,5 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [hiccup "1.0.5"]
-                 [instaparse "1.4.2"]
+                 [instaparse "1.4.3"]
                  [funcool/cuerdas "0.8.0"]])
