@@ -1,0 +1,34 @@
+#+title: Organum
+
+Simple [[http://orgmode.org][org-mode]] parser in clojure.
+
+Some regexps and logic flagrantly stolen from [[https://github.com/bdewey/org-ruby][org-ruby]] and [[https://github.com/bjonnh/PyOrgMode][PyOrgMode]]. Forked from Greg Hawkins' project of the same name.
+
+* Workspace
+
+#+BEGIN_SRC emacs-lisp
+
+  (clj-workspace "~/src/organum/src/organum/core.clj"
+		 "~/src/organum/project.clj")
+
+#+END_SRC
+
+* Parsers
+
+** TODO Headlines
+
+** TODO Drawers
+
+** TODO Lists
+
+** TODO Tables
+
+** TODO Blocks
+
+** TODO Metadata
+
+** TODO Inline Markup
+
+Copyright Greg Hawkins 2012. 
+
+Distributed under the Eclipse Public License, the same as Clojure.
