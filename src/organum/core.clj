@@ -105,27 +105,10 @@
 (defn rejoin-lines
   "Rejoin lines with appropriate line breaks."
   [coll]
-  (loop [new-coll []
-         restring []
-         coll coll]
-    (if (empty? coll)
-      (if (not (keyword? (first new-coll)))
-        (seq new-coll)
-        new-coll)
-      (let [item (first coll)]
-        (cond (string? item) (recur new-coll
-                                    (conj restring item)
-                                    (rest coll))
-              (= [:br] item) (recur new-coll
-                                    (conj restring "\n")
-                                    (rest coll))
-              :else (if (empty? restring)
-                      (recur (conj new-coll item)
-                             restring
-                             (rest coll))
-                      (recur (conj new-coll (apply str restring) item)
-                             []
-                             (rest coll))))))))
+  (reduce #(if (string? (first %2))
+             (conj %1 (apply str %2))
+             (apply conj %1 %2))
+          [] (partition-by string? (replace {[:br] "\n"} coll))))
 
 ;; Filters
 
@@ -146,6 +129,7 @@
        (map (partial reparse-string headlines))
        fix-tree
        (insta/transform {:h clean-headline})
+       rejoin-lines
        (insta/transform {:section (fn [& stuff]
                                     (rejoin-lines (concat [:section]
                                                           stuff)))})
