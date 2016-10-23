@@ -1,6 +1,5 @@
 (ns organum.core
   (:require [clojure.java.io :as io]
-            [clojure.string :as string]
             [clojure.walk :as w]
             [hiccup.core :as h]
             [instaparse.core :as insta]
@@ -21,23 +20,23 @@
 
 (def headlines
   (insta/parser
-   "<S> = token (ows token)*
+   "<S> = token (brs token)*
     <token> = section / content
-    section = h (ows content)*
-    h = ows stars <#'\\s+'> headline
+    section = br? h ws? (brs content)*
+    h = stars ws headline
     <headline> = keyed / unkeyed
-    <keyed> = keyword ws-line unkeyed
+    <keyed> = keyword ws unkeyed
     <unkeyed> = prioritized / title
-    <prioritized> = priority ws-line title
-    <title> = (#'.'+ ws-line? tags) / #'.+'
-    stars = #'^\\*+'
+    <prioritized> = priority ws title
+    <title> = (#'.'+ ws* tags) / #'.+'
+    stars = #'\\*+'
     keyword = #'TODO|DONE'
     priority = <'[#'> #'[a-zA-Z]' <']'>
-    tags = <':'> (tag <':'>)+ ws
+    tags = <':'> (tag <':'>)+ ws?
     <tag> = #'[a-zA-Z0-9_@]+'
-    <ws> = <#'[\r\n\\s]+'>
-    <ws-line> = <#'[^\r\n\\S]+'>
-    <ows> = <#'\\s*'>
+    <ws> = <#'[^\\S\\r\\n]+'>
+    <brs> = (br br br br+) / (br br br+) / (br br+) / br+
+    br = <#'[\\r\\n]'>
     <content> = #'^([^*].*)?'"))
 
 (def inline-markup
@@ -52,6 +51,24 @@
     super = <'^'> (#'\\w' | <'{'> inline <'}'>)
     sub = <'_'> (#'\\w' | <'{'> inline <'}'>)
     <string> = '\\\\*' | '\\\\/' | '\\\\_' | '\\\\+' | '\\\\='  '\\\\~' | '\\\\^' | #'[^*/_+=~^_\\\\]*'"))
+
+;; (def is-table
+;;   (insta/parser
+;;    "org-table = bar-table-line+
+;;     bar-table-line = #'|[^\\n\\r]+
+;;     br = #'[\\r\\n]'"))
+
+(def org-tables
+  (insta/parser
+   "table = th? tr+
+    th = tr-start td+ line-break horiz-line
+    <line-break> = <#'[\\r\\n]'>
+    <horiz-line> = <#'[-|+]+'>
+    tr = tr-start td+
+    <tr-start> = <'|'> <#'[\\s]+'>
+    td = contents td-end
+    <td-end> = <#'\\s+|'>
+    <contents> = #'(\\s*[^|\\s]+)+'"))
 
 ;; Fixers
 
@@ -85,6 +102,31 @@
                         (drop-while string?))]
     (vec (concat [level] first-lists title last-lists))))
 
+(defn rejoin-lines
+  "Rejoin lines with appropriate line breaks."
+  [coll]
+  (loop [new-coll []
+         restring []
+         coll coll]
+    (if (empty? coll)
+      (if (not (keyword? (first new-coll)))
+        (seq new-coll)
+        new-coll)
+      (let [item (first coll)]
+        (cond (string? item) (recur new-coll
+                                    (conj restring item)
+                                    (rest coll))
+              (= [:br] item) (recur new-coll
+                                    (conj restring "\n")
+                                    (rest coll))
+              :else (if (empty? restring)
+                      (recur (conj new-coll item)
+                             restring
+                             (rest coll))
+                      (recur (conj new-coll (apply str restring) item)
+                             []
+                             (rest coll))))))))
+
 ;; Filters
 
 (defn reparse-string
@@ -104,4 +146,12 @@
        (map (partial reparse-string headlines))
        fix-tree
        (insta/transform {:h clean-headline})
+       (insta/transform {:section (fn [& stuff]
+                                    (rejoin-lines (concat [:section]
+                                                          stuff)))})
        ))
+
+(defn parse-file
+  "Read the given file path and parse it"
+  [path]
+  (parse (slurp path)))

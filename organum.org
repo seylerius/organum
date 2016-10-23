@@ -15,20 +15,71 @@ Some regexps and logic flagrantly stolen from [[https://github.com/bdewey/org-ru
 
 * Parsers
 
-** TODO Headlines
+** TODO [#A] Sections
 
-** TODO Drawers
+*** TODO [#A] Headlines
 
-** TODO Lists
+**** DONE Stars
+CLOSED: [2016-09-03 Sat 19:20]
 
-** TODO Tables
+**** DONE Keyword
+CLOSED: [2016-09-03 Sat 19:20]
 
-** TODO Blocks
+**** DONE Priority
+CLOSED: [2016-09-03 Sat 19:20]
 
-** TODO Metadata
+**** TODO [#B] State
 
-** TODO Inline Markup
++ Can be either ~COMMENT~ or ~ARCHIVE~
++ Is always the start of the title
++ Sections started by a ~COMMENT~ or ~ARCHIVE~ headline will not be rendered in publishable documents.
++ ~COMMENT~ sections will only be visible in internally
++ ~ARCHIVE~ sections will be folded and hidden, unless activated during editing
 
-Copyright Greg Hawkins 2012. 
+**** DONE Title
+CLOSED: [2016-09-03 Sat 19:20]
 
-Distributed under the Eclipse Public License, the same as Clojure.
+**** DONE Tags
+CLOSED: [2016-09-03 Sat 19:20]
+
+*** TODO [#C] Planning
+
+Planning lines are for indicating the date/time of events related to tasks:
+
++ Deadlines
++ Schedules
++ Completions
+
+**** Structure
+
+~PLANNING_STATE: [TIMESTAMP]~
+
+**** Examples
+
++ ~DEADLINE: [2016-09-03 Sat 12:00]~
++ ~SCHEDULED: [2016-09-03 Sat 13:00]~
++ ~CLOSED: [2016-09-03 Sat 13:30]~
+
+*** TODO [#C] Property Drawers
+
+** TODO [#C] Drawers
+
+** TODO [#A] Lists
+
+** TODO [#A] Tables
+
+** TODO [#C] Blocks
+
+** TODO [#B] Metadata
+
+*** DONE Author
+CLOSED: [2016-09-03 Sat 19:42]
+
+*** DONE Title
+CLOSED: [2016-09-03 Sat 19:43]
+
+*** TODO [#B] Date
+
+** DONE Inline Markup
+CLOSED: [2016-09-03 Sat 19:41]
+

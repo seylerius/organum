@@ -6,4 +6,5 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [hiccup "1.0.5"]
                  [instaparse "1.4.3"]
-                 [funcool/cuerdas "0.8.0"]])
+                 [funcool/cuerdas "0.8.0"]]
+  :repl-options {:init-ns organum.core})
