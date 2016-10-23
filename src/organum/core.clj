@@ -36,7 +36,7 @@
     <tag> = #'[a-zA-Z0-9_@]+'
     <ws> = <#'[^\\S\\r\\n]+'>
     <brs> = (br br br br+) / (br br br+) / (br br+) / br+
-    br = <#'[\\r\\n]'>
+    br = <#'\\r?\\n'>
     <content> = #'^([^*].*)?'"))
 
 (def inline-markup
