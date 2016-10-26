@@ -13,6 +13,9 @@ Some regexps and logic flagrantly stolen from [[https://github.com/bdewey/org-ru
 
 #+END_SRC
 
+#+RESULTS:
+: #<process nrepl-server>
+
 * Parsers
 
 ** TODO [#A] Sections

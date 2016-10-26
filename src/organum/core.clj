@@ -20,7 +20,7 @@
 
 (def headlines
   (insta/parser
-   "<S> = token (brs token)*
+   "<S> = token (<brs> token)*
     <token> = section / content
     section = br? h ws? (brs content)*
     h = stars ws headline
@@ -119,6 +119,25 @@
     (parser i)
     i))
 
+(defn break-reducer
+  "Filter based on breaks"
+  [out item]
+  (cond (string? item) (conj out item)
+        (= [:br] item) (cond (string? (last out)) (conj out item)
+                             (= [:br] (last out)) (conj out item)
+                             :else out)
+        (coll? item) (cond (string? (last out)) (conj out item)
+                           (= [:br] (last out)) (break-reducer (butlast out)
+                                                               item)
+                           :else (conj out item))))
+
+(defn break-cleaner
+  "Remove extraneous breaks"
+  ([coll]
+   (reduce break-reducer [] coll))
+  ([coll lead]
+   (reduce break-reducer [lead] coll)))
+
 ;; Overall Parser
 
 (defn parse
@@ -129,6 +148,8 @@
        (map (partial reparse-string headlines))
        fix-tree
        (insta/transform {:h clean-headline})
+       (insta/transform {:section (fn [& stuff]
+                                    (break-cleaner stuff :section))})
        rejoin-lines
        (insta/transform {:section (fn [& stuff]
                                     (rejoin-lines (concat [:section]
