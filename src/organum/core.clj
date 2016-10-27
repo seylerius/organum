@@ -52,11 +52,13 @@
     sub = <'_'> (#'\\w' | <'{'> inline <'}'>)
     <string> = '\\\\*' | '\\\\/' | '\\\\_' | '\\\\+' | '\\\\='  '\\\\~' | '\\\\^' | #'[^*/_+=~^_\\\\]*'"))
 
-;; (def is-table
-;;   (insta/parser
-;;    "org-table = bar-table-line+
-;;     bar-table-line = #'|[^\\n\\r]+
-;;     br = #'[\\r\\n]'"))
+(def is-table
+  (insta/parser
+   "td = tr+
+    tr = (#'|[^\\n\\r]+' <br>) / (#'|[^\\n\\r]+' <br?>)
+    br = #'\\r\\n' / #'[\\r\\n]'
+    <brs> = (br br br br+) / (br br br+) / (br br+) / br+
+    <content> = #'^[^|\\n\\r][^\\n\\r]*' brs?"))
 
 (def org-tables
   (insta/parser
