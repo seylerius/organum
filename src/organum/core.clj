@@ -54,8 +54,8 @@
 
 (def is-table
   (insta/parser
-   "td = tr+
-    tr = (#'|[^\\n\\r]+' <br>) / (#'|[^\\n\\r]+' <br?>)
+   "<S> = (table-row / content)+
+    table-row = #'^\\|[^\\r\\n]+' <br>?
     br = #'\\r\\n' / #'[\\r\\n]'
     <brs> = (br br br br+) / (br br br+) / (br br+) / br+
     <content> = #'^[^|\\n\\r][^\\n\\r]*' brs?"))
