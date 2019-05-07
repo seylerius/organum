@@ -1,0 +1,88 @@
+#+title: Organum
+
+Simple [[http://orgmode.org][org-mode]] parser in clojure.
+
+Some regexps and logic flagrantly stolen from [[https://github.com/bdewey/org-ruby][org-ruby]] and [[https://github.com/bjonnh/PyOrgMode][PyOrgMode]]. Forked from Greg Hawkins' project of the same name.
+
+* Workspace
+
+#+BEGIN_SRC emacs-lisp
+
+  (clj-workspace "~/src/organum/src/organum/core.clj"
+		 "~/src/organum/project.clj")
+
+#+END_SRC
+
+#+RESULTS:
+: #<process nrepl-server>
+
+* Parsers
+
+** TODO [#A] Sections
+
+*** TODO [#A] Headlines
+
+**** DONE Stars
+CLOSED: [2016-09-03 Sat 19:20]
+
+**** DONE Keyword
+CLOSED: [2016-09-03 Sat 19:20]
+
+**** DONE Priority
+CLOSED: [2016-09-03 Sat 19:20]
+
+**** TODO [#B] State
+
++ Can be either ~COMMENT~ or ~ARCHIVE~
++ Is always the start of the title
++ Sections started by a ~COMMENT~ or ~ARCHIVE~ headline will not be rendered in publishable documents.
++ ~COMMENT~ sections will only be visible in internally
++ ~ARCHIVE~ sections will be folded and hidden, unless activated during editing
+
+**** DONE Title
+CLOSED: [2016-09-03 Sat 19:20]
+
+**** DONE Tags
+CLOSED: [2016-09-03 Sat 19:20]
+
+*** TODO [#C] Planning
+
+Planning lines are for indicating the date/time of events related to tasks:
+
++ Deadlines
++ Schedules
++ Completions
+
+**** Structure
+
+~PLANNING_STATE: [TIMESTAMP]~
+
+**** Examples
+
++ ~DEADLINE: [2016-09-03 Sat 12:00]~
++ ~SCHEDULED: [2016-09-03 Sat 13:00]~
++ ~CLOSED: [2016-09-03 Sat 13:30]~
+
+*** TODO [#C] Property Drawers
+
+** TODO [#C] Drawers
+
+** TODO [#A] Lists
+
+** TODO [#A] Tables
+
+** TODO [#C] Blocks
+
+** TODO [#B] Metadata
+
+*** DONE Author
+CLOSED: [2016-09-03 Sat 19:42]
+
+*** DONE Title
+CLOSED: [2016-09-03 Sat 19:43]
+
+*** TODO [#B] Date
+
+** DONE Inline Markup
+CLOSED: [2016-09-03 Sat 19:41]
+
