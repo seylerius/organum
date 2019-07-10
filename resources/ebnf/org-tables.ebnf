@@ -1,0 +1,9 @@
+table = th? tr+
+th = tr-start td+ line-break horiz-line
+<line-break> = <#'[\\r\\n]'>
+<horiz-line> = <#'[-|+]+'>
+tr = tr-start td+
+<tr-start> = <'|'> <#'[\\s]+'>
+td = contents td-end
+<td-end> = <#'\\s+|'>
+<contents> = #'(\\s*[^|\\s]+)+'

@@ -1,0 +1,5 @@
+<S> = (table-row / content)+
+table-row = #'^\\|[^\\r\\n]+' <br>?
+br = #'\\r\\n' / #'[\\r\\n]'
+<brs> = (br br br br+) / (br br br+) / (br br+) / br+
+<content> = #'^[^|\\n\\r][^\\n\\r]*' brs?

@@ -7,81 +7,37 @@
 
 ;; Parsers
 
-(def doc-metadata
-  (insta/parser
-   "<document> = token (ows token)*
-    <token> = metadata / content
-    <metadata> = title | author | date
-    title = <'#+title: '> #'.*'
-    author = <'#+author: '> #'.*'
-    <ows> = <#'[\\s\r\n]*'>
-    date = <'#+date: '> #'.*'
-    <content> = #'(?s).*'"))
+(def parser-root "src/organum/")
+(def grammar-ext ".ebnf")
+(def parsers* [:doc-metadata
+               :headlines
+               :inline-markup
+               :is-table
+               :org-tables])
 
-(def headlines
-  (insta/parser
-   "<S> = token (<brs> token)*
-    <token> = section / content
-    section = br? h ws? (brs content)*
-    h = stars ws headline
-    <headline> = keyed / unkeyed
-    <keyed> = keyword ws unkeyed
-    <unkeyed> = prioritized / title
-    <prioritized> = priority ws title
-    <title> = (#'.'+ ws* tags) / #'.+'
-    stars = #'\\*+'
-    keyword = #'TODO|DONE'
-    priority = <'[#'> #'[a-zA-Z]' <']'>
-    tags = <':'> (tag <':'>)+ ws?
-    <tag> = #'[a-zA-Z0-9_@]+'
-    <ws> = <#'[^\\S\\r\\n]+'>
-    <brs> = (br br br br+) / (br br br+) / (br br+) / br+
-    br = <#'\\r?\\n'>
-    <content> = #'^([^*].*)?'"))
+(defn parser-path [bnf-name]
+  ;; TODO: use resources folder
+  (str parser-root (name bnf-name) grammar-ext))
 
-(def inline-markup
-  (insta/parser
-   "<inline> = (b | i | u | strike | verbatim | code | super | sub | string)+
-    b = <'*'> inline <'*'>
-    i = <'/'> inline <'/'>
-    u = <'_'> inline <'_'>
-    strike = <'+'> inline <'+'>
-    verbatim = <'='> '[^=]+' <'='>
-    code = <'~'> #'[^~]+' <'~'>
-    super = <'^'> (#'\\w' | <'{'> inline <'}'>)
-    sub = <'_'> (#'\\w' | <'{'> inline <'}'>)
-    <string> = '\\\\*' | '\\\\/' | '\\\\_' | '\\\\+' | '\\\\='  '\\\\~' | '\\\\^' | #'[^*/_+=~^_\\\\]*'"))
+(defn wrap-parser [f] (map (partial reparse-string f)))
+(defn get-parser*
+  [bnf-name]
+  (insta/parser (slurp (parser-path bnf-name))))
 
-(def is-table
-  (insta/parser
-   "<S> = (table-row / content)+
-    table-row = #'^\\|[^\\r\\n]+' <br>?
-    br = #'\\r\\n' / #'[\\r\\n]'
-    <brs> = (br br br br+) / (br br br+) / (br br+) / br+
-    <content> = #'^[^|\\n\\r][^\\n\\r]*' brs?"))
+(defn get-parser [bnf-name] (wrap-parser (get-parser* bnf-name)))
 
-(def org-tables
-  (insta/parser
-   "table = th? tr+
-    th = tr-start td+ line-break horiz-line
-    <line-break> = <#'[\\r\\n]'>
-    <horiz-line> = <#'[-|+]+'>
-    tr = tr-start td+
-    <tr-start> = <'|'> <#'[\\s]+'>
-    td = contents td-end
-    <td-end> = <#'\\s+|'>
-    <contents> = #'(\\s*[^|\\s]+)+'"))
+(def parsers (into {} (map (juxt identity get-parser) parsers*)))
 
-;; Fixers
+(defn parse-all [init] (reduce #(%2 %1) init (vals parsers)))
 
 (defn tree-fixer
   [tree item]
   (cond (vector? item)
         (conj tree (vec (reduce tree-fixer [] item)))
-        
+
         (and (coll? item) (not (vector? item)))
         (apply concat tree (map (partial tree-fixer []) item))
-        
+
         :default (conj tree item)))
 
 (defn fix-tree
@@ -92,15 +48,15 @@
   [stars & args]
   (let [level (keyword (str "h" (count (second stars))))
         first-lists (->> args
-                        (take-while (complement string?)) 
+                        (take-while (complement string?))
                         (drop-while string?))
-        title (->> args 
-                   (drop-while (complement string?)) 
+        title (->> args
+                   (drop-while (complement string?))
                    (take-while string?)
                    (apply str)
                    inline-markup)
-        last-lists (->> args 
-                        (drop-while (complement string?)) 
+        last-lists (->> args
+                        (drop-while (complement string?))
                         (drop-while string?))]
     (vec (concat [level] first-lists title last-lists))))
 
@@ -147,15 +103,15 @@
   [data]
   (->> data
        doc-metadata
-       (map (partial reparse-string headlines))
-       fix-tree
-       (insta/transform {:h clean-headline})
-       (insta/transform {:section (fn [& stuff]
-                                    (break-cleaner stuff :section))})
-       rejoin-lines
-       (insta/transform {:section (fn [& stuff]
-                                    (rejoin-lines (concat [:section]
-                                                          stuff)))})
+       ;; (map (partial reparse-string headlines))
+       ;; fix-tree
+       ;; (insta/transform {:h clean-headline})
+       ;; (insta/transform {:section (fn [& stuff]
+       ;;                              (break-cleaner stuff :section))})
+       ;; rejoin-lines
+       ;; (insta/transform {:section (fn [& stuff]
+       ;;                              (rejoin-lines (concat [:section]
+       ;;                                                    stuff)))})
        ))
 
 (defn parse-file

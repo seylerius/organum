@@ -1,0 +1,8 @@
+<document> = token (ows token)*
+<token> = metadata / content
+<metadata> = title | author | date
+title = <'#+title: '> #'.*'
+author = <'#+author: '> #'.*'
+<ows> = <#'[\\s\r\n]*'>
+date = <'#+date: '> #'.*'
+<content> = #'(?s).*'

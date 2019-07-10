@@ -1,0 +1,10 @@
+<inline> = (b | i | u | strike | verbatim | code | super | sub | string)+
+b = "*" inline "*"
+i = "/" inline "/"
+u = "_" inline "_"
+strike = "+" inline "+"
+verbatim = "=" "[^=]+" "="
+code = "~" #"[^~]+" "~"
+super = "^" (#"\w" | "{" inline "}")
+sub = "_" (#"\w" | "{" inline "}")
+<string> = #"[^*/_+=~^_\\\\]*"
